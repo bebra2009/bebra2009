@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<style>
+		body{
+			margin: 0;
+			height: 100%;
+			background: #00b300;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+	</style>
+</head>
+<body>
+<canvas width="800" height="400"
+id="game"></canvas>
+<script type="text/javascript">
+	const canvas = document.getElementById('game');
+	const ctx = canvas.getContext('2d');
+
+	const grid = 15;
+	const playerHeight = grid * 2;
+	const maxY = canvas.height-playerHeight-grid;
+	const maxX = canvas.width - grid - grid;
+
+	const playerSpeed = 7;
+	var ballSpeed = 4;
+
+	var scoreLeft = 0;
+	var scoreRight = 0;
+
+	const leftPlayer = {
+		x: grid*3,
+		y: canvas.height/2 - playerHeight/2,
+		width: grid,
+		height: playerHeight,
+		dx: 0,
+		dy: 0
+	};
+
+	const rightPlayer = {
+		x: canvas.width-grid*3,
+		y: canvas.height/2 -playerHeight/2,
+		width: grid,
+		height: playerHeight,
+		dx: 0,
+		dy: 0
+	};
+
+	const ball = {
+		x: canvas.width/2,
+		y: canvas.height/2,
+		width: grid*2,
+		height: grid*2,
+		resseting: false,
+		dx: ballSpeed,
+		dy: -ballSpeed
+	};
+	function collides(obj1, obj2){
+		return obj1.x < obj2.x + obj2.width &&
+		obj1.x +obj1.width > obj2.x &&
+		obj1.y < obj2.y + obj2.height &&
+		obj1.y + obj1.height > obj2.y;
+	}
+
+	function loop(){
+		requestAnimationFrame(loop);
+		ctx.clearRect(0, 0, canvas.width, 
+			canvas.height);
+		leftPlayer.y += leftPlayer.dy;
+		rightPlayer.y += rightPlayer.dy;
+		leftPlayer.x += leftPlayer.dx;
+		rightPlayer.x += rightPlayer.dx;
+
+		// рисуем мяч
+		ctx.fillStyle = 'white';
+		ctx.arc(ball.x, ball.y, ball.width/2,
+		0, 2*Math.PI );
+		ctx.fill();
+		//белые линии
+		ctx.strokeStyle = 'white';
+		ctx.lineWidth = 5;
+		ctx.strokeRect(0, 0, canvas.width, canvas.height)
+		//центральная линия
+		ctx.beginPath();
+		ctx.moveTo(canvas.width / 2, 0);
+		ctx.lineTo(canvas.width / 2, canvas.height);
+		ctx.stroke();
+		//центральный круг
+		ctx.beginPath();
+		ctx.arc(canvas.width/2, canvas.height/2, 70, 0, Math.PI*2);
+		ctx.stroke();
+		//ворота
+		ctx.strokeStyle = '#ccc';
+		ctx.lineWidth = 40;
+		ctx.beginPath();
+		ctx.moveTo(0, canvas.height/2 - 100);
+		ctx.lineTo(0, canvas.height/2 + 100);
+		ctx.stroke();
+
+		ctx.beginPath();
+		ctx.moveTo(canvas.width, canvas.height/2 - 100);
+		ctx.lineTo(canvas.width, canvas.height/2 + 100);
+		ctx.stroke();
+
+		//маркеры углов поля
+		//левый верхний
+		ctx.beginPath();
+		ctx.arc(0, 0, 10, 0, Math.PI * 2);
+		ctx.fill();
+
+		//правый верхний
+		ctx.beginPath();
+		ctx.arc(canvas.width, 0, 10, 0, Math.PI * 2);
+		ctx.fill();
+
+		//левый нижний
+		ctx.beginPath();
+		ctx.arc(0, canvas.height, 10, 0, Math.PI * 2);
+		ctx.fill();
+
+		//правый  нижний
+		ctx.beginPath();
+		ctx.arc(canvas.width, canvas.height, 10, 0, Math.PI * 2);
+		ctx.fill();
+		//рисуем игроков
+		ctx.fillStyle = 'red';
+		ctx.fillRect(leftPlayer.x, leftPlayer.y, leftPlayer.width, leftPlayer.height);
+		ctx.fillStyle = 'blue';
+		ctx.fillRect(rightPlayer.x, rightPlayer.y, rightPlayer.width, rightPlayer.height);
+}
+	document.addEventListener('keydown', function(e){
+
+		if(e.keyCode === 38){
+			rightPlayer.dy = -playerSpeed;
+		}
+		else if(e.keyCode === 40){
+			rightPlayer.dy = playerSpeed;
+		}
+		else if (e.keyCode === 37) {
+			rightPlayer.dx = -playerSpeed; 
+		}
+		else if(e.keyCode === 39){
+			rightPlayer.dx = playerSpeed;
+		}
+
+		//движение левого игрока
+		if(e.keyCode === 87){
+			leftPlayer.dy = -playerSpeed;
+		}
+		else if(e.keyCode === 83){
+			leftPlayer.dy = playerSpeed;
+		}
+		else if (e.keyCode === 65) {
+			leftPlayer.dx = -playerSpeed; 
+		}
+		else if(e.keyCode === 68){
+			leftPlayer.dx = playerSpeed;
+		}
+
+	});
+
+	document.addEventListener('keyup', function(e){
+		if(e.keyCode === 38 || e.keyCode === 40){
+			rightPlayer.dy = 0;
+		}
+		if(e.keyCode === 37 || e.keyCode === 39){
+			rightPlayer.dx = 0;
+		}
+		if(e.keyCode === 83 || e.keyCode === 87){
+			leftPlayer.dy = 0;
+		}
+		if(e.keyCode === 65 || e.keyCode === 68){
+			leftPlayer.dx = 0;
+		}
+
+
+	});
+
+loop();
+</script>
+</body>
+</html>
